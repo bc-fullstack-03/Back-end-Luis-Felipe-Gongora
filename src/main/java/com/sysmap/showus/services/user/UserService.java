@@ -29,4 +29,9 @@ public class UserService {
         var user = new User(request.getName(), request.getEmail(), request.getPassword());
         return repo.save(user);
     }
+
+    public void delete(UUID id){
+        findById(id);
+        repo.deleteById(id);
+    }
 }
