@@ -1,4 +1,4 @@
-package com.showus.showus;
+package com.sysmap.showus;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

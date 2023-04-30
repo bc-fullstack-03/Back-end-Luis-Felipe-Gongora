@@ -1,4 +1,4 @@
-package com.showus.showus;
+package com.sysmap.showus;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
