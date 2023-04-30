@@ -2,10 +2,9 @@ package com.sysmap.showus.api;
 
 import com.sysmap.showus.data.UserDTO;
 import com.sysmap.showus.domain.User;
-import com.sysmap.showus.services.user.CreateUserRequest;
+import com.sysmap.showus.services.user.UserRequest;
 import com.sysmap.showus.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -30,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createUser(@RequestBody CreateUserRequest request){
+    public ResponseEntity<Void> createUser(@RequestBody UserRequest request){
         User user = service.createUser(request);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
         return ResponseEntity.created(uri).build();
@@ -45,6 +44,12 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable UUID id){
         service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateUser(@RequestBody UserRequest request, @PathVariable UUID id) {
+        User user = service.update(id, request);
         return ResponseEntity.noContent().build();
     }
 }

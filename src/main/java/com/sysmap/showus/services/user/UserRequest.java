@@ -2,8 +2,11 @@ package com.sysmap.showus.services.user;
 
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
-public class CreateUserRequest {
+public class UserRequest {
+    private UUID id;
     private String name;
     private String email;
     private String password;
@@ -30,5 +33,13 @@ public class CreateUserRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 }

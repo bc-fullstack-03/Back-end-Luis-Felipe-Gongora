@@ -1,6 +1,7 @@
 package com.sysmap.showus.services.user;
 
 import com.sysmap.showus.data.IUserRepository;
+import com.sysmap.showus.data.UserDTO;
 import com.sysmap.showus.domain.User;
 import com.sysmap.showus.services.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class UserService {
         return user.orElseThrow(() -> new UserNotFoundException("Usuario não encontrado"));
     }
 
-    public User createUser(CreateUserRequest request){
+    public User createUser(UserRequest request){
         var user = new User(request.getName(), request.getEmail(), request.getPassword());
         return repo.save(user);
     }
@@ -33,5 +34,18 @@ public class UserService {
     public void delete(UUID id){
         findById(id);
         repo.deleteById(id);
+    }
+
+    public User update (UUID id, UserRequest request){
+        User newUser = findById(id);
+        updateData(newUser, request);
+        return repo.save(newUser);
+
+    }
+
+    private void updateData(User newUser, UserRequest user) {
+        newUser.setName(user.getName());
+        newUser.setEmail(user.getEmail());
+        newUser.setPassword(user.getPassword());
     }
 }
