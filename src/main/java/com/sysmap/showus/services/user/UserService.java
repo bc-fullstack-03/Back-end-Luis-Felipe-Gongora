@@ -1,9 +1,8 @@
 package com.sysmap.showus.services.user;
 
 import com.sysmap.showus.data.IUserRepository;
-import com.sysmap.showus.data.UserDTO;
 import com.sysmap.showus.domain.User;
-import com.sysmap.showus.services.exception.UserNotFoundException;
+import com.sysmap.showus.services.exception.ObjNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +22,7 @@ public class UserService implements IUserService {
 
     public User findById(UUID id){
         Optional<User> user = repo.findById(id);
-        return user.orElseThrow(() -> new UserNotFoundException("Usuario não encontrado"));
+        return user.orElseThrow(() -> new ObjNotFoundException("Usuario não encontrado"));
     }
 
     public void delete(UUID id){

@@ -1,6 +1,7 @@
-package com.sysmap.showus.services.post;
+package com.sysmap.showus.services.comment;
 
 import com.sysmap.showus.data.AuthorDTO;
+import com.sysmap.showus.data.CommentDTO;
 import com.sysmap.showus.data.IPostRepository;
 import com.sysmap.showus.data.IUserRepository;
 import com.sysmap.showus.domain.Post;
@@ -10,12 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class PostService implements IPostService {
+public class CommentService implements ICommentService {
 
     @Autowired
     private IPostRepository repo;
@@ -25,25 +24,25 @@ public class PostService implements IPostService {
 
     @Autowired
     private UserService userService;
-    public List<Post> findAll(){
-        return repo.findAll();
-    }
+//    public List<Post> findAll(){
+//        return repo.findAll();
+//    }
 //
-    public Post findById(UUID id){
-        Optional<Post> post = repo.findById(id);
-        return post.orElseThrow(() -> new ObjNotFoundException("Post não encontrado"));
-    }
+//    public Post findById(UUID id){
+//        Optional<Post> post = repo.findById(id);
+//        return post.orElseThrow(() -> new UserNotFoundException("Post não encontrado"));
+//    }
 //
 //    public void delete(UUID id){
 //        findById(id);
 //        repo.deleteById(id);
 //    }
 
-    public Post createPost(PostRequest request, UUID userId) {
+    public Post createComment(CommentRequest request, UUID userId, UUID postId) {
         var author = userService.findById(userId);
-        var post = new Post(request.getTitle(), request.getBody(), new AuthorDTO(author));
-        author.getPosts().addAll(Arrays.asList(post));
-        userRepo.save(author);
+        var post = repo.findById(postId).orElseThrow(() -> new ObjNotFoundException("Post não encontrado!"));
+        var comment = new CommentDTO(request.getText(), new AuthorDTO(author));
+        post.getComments().addAll(Arrays.asList(comment));
         return repo.save(post);
     }
 
