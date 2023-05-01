@@ -26,14 +26,14 @@ public class PostService implements IPostService {
 
     @Autowired
     private UserService userService;
-//    public List<User> findAll(){
-//        return repo.findAll();
-//    }
+    public List<Post> findAll(){
+        return repo.findAll();
+    }
 //
-//    public User findById(UUID id){
-//        Optional<User> user = userRepo.findById(id);
-//        return user.orElseThrow(() -> new UserNotFoundException("Usuario não encontrado"));
-//    }
+    public Post findById(UUID id){
+        Optional<Post> post = repo.findById(id);
+        return post.orElseThrow(() -> new UserNotFoundException("Post não encontrado"));
+    }
 //
 //    public void delete(UUID id){
 //        findById(id);

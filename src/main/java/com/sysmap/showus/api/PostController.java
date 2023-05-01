@@ -6,6 +6,7 @@ import com.sysmap.showus.domain.User;
 import com.sysmap.showus.services.post.PostRequest;
 import com.sysmap.showus.services.post.PostService;
 import com.sysmap.showus.services.user.UserRequest;
+import com.sysmap.showus.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,31 +18,39 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/user/{userId}")
+@RequestMapping("/api/v1/user")
 public class PostController {
 
     @Autowired
     private PostService service;
 
-//    @GetMapping
-//    public ResponseEntity<List<UserDTO>> findAll(){
-//        List<User> list = service.findAll();
-//        List<UserDTO> listDTO = list.stream().map(x -> new UserDTO(x)).collect(Collectors.toList());
-//        return ResponseEntity.ok().body(listDTO);
-//    }
+    @Autowired
+    private UserService userService;
 
-    @PostMapping("/post")
+    @GetMapping("/post")
+    public ResponseEntity<List<Post>> findAll(){
+        List<Post> list = service.findAll();
+        return ResponseEntity.ok().body(list);
+    }
+
+    @GetMapping("/post/{id}")
+    public ResponseEntity<Post> findById(@PathVariable UUID id){
+        Post post = service.findById(id);
+        return ResponseEntity.ok().body(post);
+    }
+
+    @PostMapping("/{userId}/post")
     public ResponseEntity<Void> createPost(@RequestBody PostRequest request, @PathVariable UUID userId){
         Post post = service.createPost(request, userId);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(post.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<UserDTO> findById(@PathVariable UUID id){
-//        User user = service.findById(id);
-//        return ResponseEntity.ok().body(new UserDTO(user));
-//    }
+    @GetMapping("/{userId}/post")
+    public ResponseEntity<List<Post>> findAllPostsFromUser(@PathVariable UUID userId){
+        User user = userService.findById(userId);
+        return ResponseEntity.ok().body(user.getPosts());
+    }
 
 //    @DeleteMapping("/{id}")
 //    public ResponseEntity<Void> deleteById(@PathVariable UUID id){
