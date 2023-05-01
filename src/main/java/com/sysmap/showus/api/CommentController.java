@@ -1,10 +1,8 @@
 package com.sysmap.showus.api;
 
 import com.sysmap.showus.domain.Post;
-import com.sysmap.showus.domain.User;
 import com.sysmap.showus.services.comment.CommentRequest;
 import com.sysmap.showus.services.comment.CommentService;
-import com.sysmap.showus.services.post.PostRequest;
 import com.sysmap.showus.services.post.PostService;
 import com.sysmap.showus.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 
 @RestController

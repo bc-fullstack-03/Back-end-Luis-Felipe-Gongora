@@ -49,15 +49,15 @@ public class PostController {
         return ResponseEntity.ok().body(user.getPosts());
     }
 
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteById(@PathVariable UUID id){
-//        service.delete(id);
-//        return ResponseEntity.noContent().build();
-//    }
+    @DeleteMapping("/{userId}/post/{postId}")
+    public ResponseEntity<Void> deleteById(@PathVariable UUID userId, @PathVariable UUID postId){
+        service.delete(userId, postId);
+        return ResponseEntity.noContent().build();
+    }
 
-//    @PutMapping("/{id}")
-//    public ResponseEntity<Void> updateUser(@RequestBody UserRequest request, @PathVariable UUID id) {
-//        User user = service.updateUser(id, request);
-//        return ResponseEntity.noContent().build();
-//    }
+    @PutMapping("/{userId}/post/{postId}")
+    public ResponseEntity<Void> updateUser(@PathVariable UUID userId, @PathVariable UUID postId, @RequestBody PostRequest request) {
+        service.updatePost(userId, postId, request);
+        return ResponseEntity.noContent().build();
+    }
 }

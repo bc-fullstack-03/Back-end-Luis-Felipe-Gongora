@@ -34,10 +34,14 @@ public class PostService implements IPostService {
         return post.orElseThrow(() -> new ObjNotFoundException("Post não encontrado"));
     }
 //
-//    public void delete(UUID id){
-//        findById(id);
-//        repo.deleteById(id);
-//    }
+    public void delete(UUID userId, UUID postId){
+        var post = findById(postId);
+        if(post.getAuthor().getId().equals(userId)) {
+            repo.deleteById(postId);
+        }else{
+           throw  new ObjNotFoundException("Voce não tem autorização para excluir esse post");
+        }
+    }
 
     public Post createPost(PostRequest request, UUID userId) {
         var author = userService.findById(userId);
@@ -47,11 +51,14 @@ public class PostService implements IPostService {
         return repo.save(post);
     }
 
-//    public User updateUser(UUID id, PostRequest request) {
-//        User newUser = findById(id);
-//        newUser.setName(request.getName());
-//        newUser.setEmail(request.getEmail());
-//        newUser.setPassword(request.getPassword());
-//        return repo.save(newUser);
-//    }
+    public Post updatePost(UUID userId, UUID postId, PostRequest request) {
+        var post = findById(postId);
+        if(post.getAuthor().getId().equals(userId)) {
+            post.setTitle(request.getTitle());
+            post.setBody(request.getBody());
+            return repo.save(post);
+        }else{
+           throw new ObjNotFoundException("Voce não tem autorização para editar esse post");
+        }
+    }
 }
