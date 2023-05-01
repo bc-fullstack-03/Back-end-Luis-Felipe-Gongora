@@ -49,7 +49,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateUser(@RequestBody UserRequest request, @PathVariable UUID id) {
-        User user = service.update(id, request);
+        User user = service.updateUser(id, request);
         return ResponseEntity.noContent().build();
     }
 }

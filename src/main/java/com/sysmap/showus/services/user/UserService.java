@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserService {
+public class UserService implements IUserService {
 
     @Autowired
     private IUserRepository repo;
@@ -26,26 +26,21 @@ public class UserService {
         return user.orElseThrow(() -> new UserNotFoundException("Usuario não encontrado"));
     }
 
-    public User createUser(UserRequest request){
-        var user = new User(request.getName(), request.getEmail(), request.getPassword());
-        return repo.save(user);
-    }
-
     public void delete(UUID id){
         findById(id);
         repo.deleteById(id);
     }
 
-    public User update (UUID id, UserRequest request){
-        User newUser = findById(id);
-        updateData(newUser, request);
-        return repo.save(newUser);
-
+    public User createUser(UserRequest request) {
+        var user = new User(request.getName(), request.getEmail(), request.getPassword());
+        return repo.save(user);
     }
 
-    private void updateData(User newUser, UserRequest user) {
-        newUser.setName(user.getName());
-        newUser.setEmail(user.getEmail());
-        newUser.setPassword(user.getPassword());
+    public User updateUser(UUID id, UserRequest request) {
+        User newUser = findById(id);
+        newUser.setName(request.getName());
+        newUser.setEmail(request.getEmail());
+        newUser.setPassword(request.getPassword());
+        return repo.save(newUser);
     }
 }
