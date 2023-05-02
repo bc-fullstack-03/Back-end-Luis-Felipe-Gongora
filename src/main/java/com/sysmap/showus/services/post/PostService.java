@@ -25,6 +25,7 @@ public class PostService implements IPostService {
 
     @Autowired
     private UserService userService;
+
     public List<Post> findAll(){
         return repo.findAll();
     }
