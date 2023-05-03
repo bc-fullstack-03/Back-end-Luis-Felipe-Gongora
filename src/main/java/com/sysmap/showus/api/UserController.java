@@ -1,5 +1,6 @@
 package com.sysmap.showus.api;
 
+import com.sysmap.showus.data.FollowersDTO;
 import com.sysmap.showus.data.UserDTO;
 import com.sysmap.showus.domain.User;
 import com.sysmap.showus.services.user.UserRequest;
@@ -32,6 +33,19 @@ public class UserController {
         return ResponseEntity.ok().body(listDTO);
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Find user by id")
+    public ResponseEntity<UserDTO> findById(@PathVariable UUID id){
+        User user = service.findById(id);
+        return ResponseEntity.ok().body(new UserDTO(user));
+    }
+
+    @GetMapping("/{userId}/follower")
+    @Operation(summary = "Find all followers from an user")
+    public ResponseEntity<FollowersDTO> findAllFollowersFromUser(@PathVariable UUID userId){
+        return ResponseEntity.ok().body(service.findAllFollowersFromUser(userId));
+    }
+
     @PostMapping
     @Operation(summary = "Create a new user")
     public ResponseEntity<Void> createUser(@RequestBody UserRequest request){
@@ -40,17 +54,24 @@ public class UserController {
         return ResponseEntity.created(uri).build();
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Find user by id")
-    public ResponseEntity<UserDTO> findById(@PathVariable UUID id){
-        User user = service.findById(id);
-        return ResponseEntity.ok().body(new UserDTO(user));
+    @PostMapping("/{userId}/follower/{friendId}")
+    @Operation(summary = "Add follower")
+    public ResponseEntity<Void> addFriend(@PathVariable UUID userId, @PathVariable UUID friendId){
+        service.addFollower(userId, friendId);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete user by id")
     public ResponseEntity<Void> deleteById(@PathVariable UUID id){
         service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{userId}/follower/{friendId}")
+    @Operation(summary = "Delete a follower")
+    public ResponseEntity<Void> removeFriend(@PathVariable UUID userId, @PathVariable UUID friendId){
+        service.removeFollower(userId, friendId);
         return ResponseEntity.noContent().build();
     }
 

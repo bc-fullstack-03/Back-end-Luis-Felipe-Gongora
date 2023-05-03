@@ -32,7 +32,7 @@ public class PostService implements IPostService {
 //
     public Post findById(UUID id){
         Optional<Post> post = repo.findById(id);
-        return post.orElseThrow(() -> new ObjNotFoundException("Post não encontrado"));
+        return post.orElseThrow(() -> new ObjNotFoundException("Post not found"));
     }
 //
     public void delete(UUID userId, UUID postId){
@@ -40,7 +40,7 @@ public class PostService implements IPostService {
         if(post.getAuthor().getId().equals(userId)) {
             repo.deleteById(postId);
         }else{
-           throw  new ObjNotFoundException("Voce não tem autorização para excluir esse post");
+           throw  new ObjNotFoundException("You don't have authorization");
         }
     }
 
@@ -59,7 +59,7 @@ public class PostService implements IPostService {
             post.setBody(request.getBody());
             return repo.save(post);
         }else{
-           throw new ObjNotFoundException("Voce não tem autorização para editar esse post");
+           throw new ObjNotFoundException("You don't have authorization");
         }
     }
 }

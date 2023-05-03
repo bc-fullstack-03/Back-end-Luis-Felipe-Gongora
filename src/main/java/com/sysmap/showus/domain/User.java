@@ -1,7 +1,7 @@
 package com.sysmap.showus.domain;
 
+import com.sysmap.showus.data.FollowersDTO;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -17,10 +17,11 @@ public class User {
     private String email;
     private String password;
     private Date createdAt;
-    @DBRef(lazy = true)
     private List<Post> posts = new ArrayList<>();
+    private FollowersDTO following;
 
-    public User(){}
+    public User(){
+    }
 
     public User(String name, String email, String password) {
         this.id = UUID.randomUUID();
@@ -28,6 +29,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.createdAt = new Date();
+        this.following = new FollowersDTO();
     }
 
     public UUID getId() {
@@ -68,5 +70,13 @@ public class User {
 
     public void setPosts(List<Post> posts) {
         this.posts = posts;
+    }
+
+    public FollowersDTO getFollowers() {
+        return following;
+    }
+
+    public void setFollowers(FollowersDTO followers) {
+        this.following = followers;
     }
 }

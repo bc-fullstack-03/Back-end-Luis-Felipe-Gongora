@@ -10,7 +10,7 @@ public class CommentDTO {
     private Date date;
     private AuthorDTO author;
     private Integer like;
-    @Id
+
     private UUID id;
 
     public CommentDTO(){};

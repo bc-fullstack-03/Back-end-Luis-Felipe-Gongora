@@ -3,16 +3,18 @@ package com.sysmap.showus.data;
 import com.sysmap.showus.domain.Post;
 import com.sysmap.showus.domain.User;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class UserDTO {
     private UUID id;
     private String name;
     private String email;
     private List<Post> posts;
+    private FollowersDTO followers;
     private Date createdAt;
+
+    public UserDTO(){
+    };
 
     public UserDTO(User user) {
         this.name = user.getName();
@@ -20,6 +22,7 @@ public class UserDTO {
         this.id = user.getId();
         this.createdAt = user.getCreatedAt();
         this.posts = user.getPosts();
+        this.followers = user.getFollowers();
     }
 
     public String getName() {
@@ -60,5 +63,13 @@ public class UserDTO {
 
     public void setPosts(List<Post> posts) {
         this.posts = posts;
+    }
+
+    public FollowersDTO getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(FollowersDTO followers) {
+        this.followers = followers;
     }
 }

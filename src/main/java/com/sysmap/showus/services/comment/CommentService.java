@@ -38,20 +38,20 @@ public class CommentService implements ICommentService {
 
     public Post createComment(CommentRequest request, UUID userId, UUID postId) {
         var author = userService.findById(userId);
-        var post = repo.findById(postId).orElseThrow(() -> new ObjNotFoundException("Post não encontrado!"));
+        var post = repo.findById(postId).orElseThrow(() -> new ObjNotFoundException("Post not found!"));
         var comment = new CommentDTO(request.getText(), new AuthorDTO(author));
         post.getComments().addAll(Arrays.asList(comment));
         return repo.save(post);
     }
 
     public List<CommentDTO> findAllCommentsFromPost(UUID postId){
-        var post = repo.findById(postId).orElseThrow(() -> new ObjNotFoundException("Post não encontrado!"));
+        var post = repo.findById(postId).orElseThrow(() -> new ObjNotFoundException("Post found!"));
         return post.getComments();
     }
 
     public Post updateComment(UUID postId, UUID commentId, CommentRequest request) {
         var post = postService.findById(postId);
-        var comment = post.getComments().stream().filter(c -> c.getId().equals(commentId)).findFirst().orElseThrow(() -> new ObjNotFoundException("Comentário não encontrado"));
+        var comment = post.getComments().stream().filter(c -> c.getId().equals(commentId)).findFirst().orElseThrow(() -> new ObjNotFoundException("comment not found"));
         comment.setText(request.getText());
         return repo.save(post);
     }

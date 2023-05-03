@@ -28,7 +28,7 @@ public class PostController {
     private UserService userService;
 
     @GetMapping("/post")
-    @Operation(summary = "Find all posts")
+    @Operation(summary = "Find all posts. Ex: Post feed")
     public ResponseEntity<List<Post>> findAll(){
         List<Post> list = service.findAll();
         return ResponseEntity.ok().body(list);
@@ -50,7 +50,7 @@ public class PostController {
     }
 
     @GetMapping("/{userId}/post")
-    @Operation(summary = "Find all posts from an user")
+    @Operation(summary = "Find all posts from an user. Ex: User Profile")
     public ResponseEntity<List<Post>> findAllPostsFromUser(@PathVariable UUID userId){
         User user = userService.findById(userId);
         return ResponseEntity.ok().body(user.getPosts());
