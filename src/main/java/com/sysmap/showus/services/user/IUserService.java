@@ -1,7 +1,7 @@
 package com.sysmap.showus.services.user;
 
-import com.sysmap.showus.data.FollowersDTO;
 import com.sysmap.showus.domain.User;
+import com.sysmap.showus.domain.DTO.FollowersDTO;
 
 import java.util.List;
 import java.util.UUID;

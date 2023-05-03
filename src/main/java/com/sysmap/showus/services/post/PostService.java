@@ -1,15 +1,13 @@
 package com.sysmap.showus.services.post;
 
-import com.sysmap.showus.data.AuthorDTO;
+import com.sysmap.showus.domain.DTO.AuthorDTO;
 import com.sysmap.showus.data.IPostRepository;
-import com.sysmap.showus.data.IUserRepository;
 import com.sysmap.showus.domain.Post;
 import com.sysmap.showus.services.exception.ObjNotFoundException;
 import com.sysmap.showus.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,20 +19,21 @@ public class PostService implements IPostService {
     private IPostRepository repo;
 
     @Autowired
-    private IUserRepository userRepo;
-
-    @Autowired
     private UserService userService;
 
     public List<Post> findAll(){
         return repo.findAll();
     }
-//
-    public Post findById(UUID id){
-        Optional<Post> post = repo.findById(id);
+
+    public Post findById(UUID postId){
+        Optional<Post> post = repo.findById(postId);
         return post.orElseThrow(() -> new ObjNotFoundException("Post not found"));
     }
-//
+
+    public List<Post> findByAuthorId(UUID userId){
+        return repo.findByAuthorId(userId);
+    }
+
     public void delete(UUID userId, UUID postId){
         var post = findById(postId);
         if(post.getAuthor().getId().equals(userId)) {
@@ -47,8 +46,6 @@ public class PostService implements IPostService {
     public Post createPost(PostRequest request, UUID userId) {
         var author = userService.findById(userId);
         var post = new Post(request.getTitle(), request.getBody(), new AuthorDTO(author));
-        author.getPosts().addAll(Arrays.asList(post));
-        userRepo.save(author);
         return repo.save(post);
     }
 

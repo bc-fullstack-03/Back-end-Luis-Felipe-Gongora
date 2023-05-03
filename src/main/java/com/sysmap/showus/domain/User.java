@@ -1,12 +1,10 @@
 package com.sysmap.showus.domain;
 
-import com.sysmap.showus.data.FollowersDTO;
+import com.sysmap.showus.domain.DTO.FollowersDTO;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Document
@@ -17,7 +15,6 @@ public class User {
     private String email;
     private String password;
     private Date createdAt;
-    private List<Post> posts = new ArrayList<>();
     private FollowersDTO following;
 
     public User(){
@@ -62,14 +59,6 @@ public class User {
 
     public Date getCreatedAt() {
         return createdAt;
-    }
-
-    public List<Post> getPosts() {
-        return posts;
-    }
-
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
     }
 
     public FollowersDTO getFollowers() {

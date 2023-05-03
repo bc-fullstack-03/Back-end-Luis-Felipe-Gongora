@@ -9,6 +9,7 @@ import java.util.UUID;
 public interface IPostService {
     List<Post> findAll();
     Post findById(UUID id);
+    List<Post> findByAuthorId(UUID userId);
     void delete(UUID userId, UUID postId);
     Post createPost(PostRequest request, UUID userId);
     Post updatePost(UUID userId, UUID postId, PostRequest request);

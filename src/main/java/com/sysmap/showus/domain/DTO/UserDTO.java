@@ -1,6 +1,5 @@
-package com.sysmap.showus.data;
+package com.sysmap.showus.domain.DTO;
 
-import com.sysmap.showus.domain.Post;
 import com.sysmap.showus.domain.User;
 
 import java.util.*;
@@ -9,7 +8,6 @@ public class UserDTO {
     private UUID id;
     private String name;
     private String email;
-    private List<Post> posts;
     private FollowersDTO followers;
     private Date createdAt;
 
@@ -21,7 +19,6 @@ public class UserDTO {
         this.email = user.getEmail();
         this.id = user.getId();
         this.createdAt = user.getCreatedAt();
-        this.posts = user.getPosts();
         this.followers = user.getFollowers();
     }
 
@@ -55,14 +52,6 @@ public class UserDTO {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public List<Post> getPosts() {
-        return posts;
-    }
-
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
     }
 
     public FollowersDTO getFollowers() {

@@ -1,9 +1,8 @@
 package com.sysmap.showus.services.comment;
 
-import com.sysmap.showus.data.AuthorDTO;
-import com.sysmap.showus.data.CommentDTO;
+import com.sysmap.showus.domain.DTO.AuthorDTO;
+import com.sysmap.showus.domain.DTO.CommentDTO;
 import com.sysmap.showus.data.IPostRepository;
-import com.sysmap.showus.data.IUserRepository;
 import com.sysmap.showus.domain.Post;
 import com.sysmap.showus.services.exception.ObjNotFoundException;
 import com.sysmap.showus.services.post.PostService;
@@ -20,9 +19,6 @@ public class CommentService implements ICommentService {
 
     @Autowired
     private IPostRepository repo;
-
-    @Autowired
-    private IUserRepository userRepo;
 
     @Autowired
     private UserService userService;

@@ -1,7 +1,6 @@
 package com.sysmap.showus.api;
 
 import com.sysmap.showus.domain.Post;
-import com.sysmap.showus.domain.User;
 import com.sysmap.showus.services.post.PostRequest;
 import com.sysmap.showus.services.post.PostService;
 import com.sysmap.showus.services.user.UserService;
@@ -34,7 +33,7 @@ public class PostController {
         return ResponseEntity.ok().body(list);
     }
 
-    @GetMapping("/post/{id}")
+    @GetMapping("/post/{postId}")
     @Operation(summary = "Find post by postId")
     public ResponseEntity<Post> findById(@PathVariable UUID postId){
         Post post = service.findById(postId);
@@ -52,8 +51,7 @@ public class PostController {
     @GetMapping("/{userId}/post")
     @Operation(summary = "Find all posts from an user. Ex: User Profile")
     public ResponseEntity<List<Post>> findAllPostsFromUser(@PathVariable UUID userId){
-        User user = userService.findById(userId);
-        return ResponseEntity.ok().body(user.getPosts());
+        return ResponseEntity.ok().body(service.findByAuthorId(userId));
     }
 
     @DeleteMapping("/{userId}/post/{postId}")

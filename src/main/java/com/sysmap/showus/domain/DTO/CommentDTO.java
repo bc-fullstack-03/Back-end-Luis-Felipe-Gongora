@@ -1,6 +1,4 @@
-package com.sysmap.showus.data;
-
-import org.springframework.data.annotation.Id;
+package com.sysmap.showus.domain.DTO;
 
 import java.util.Date;
 import java.util.UUID;

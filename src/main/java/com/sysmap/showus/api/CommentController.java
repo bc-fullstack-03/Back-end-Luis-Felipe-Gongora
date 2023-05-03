@@ -1,6 +1,6 @@
 package com.sysmap.showus.api;
 
-import com.sysmap.showus.data.CommentDTO;
+import com.sysmap.showus.domain.DTO.CommentDTO;
 import com.sysmap.showus.domain.Post;
 import com.sysmap.showus.services.comment.CommentRequest;
 import com.sysmap.showus.services.comment.CommentService;

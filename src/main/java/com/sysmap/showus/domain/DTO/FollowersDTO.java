@@ -1,4 +1,4 @@
-package com.sysmap.showus.data;
+package com.sysmap.showus.domain.DTO;
 
 import java.util.ArrayList;
 import java.util.List;

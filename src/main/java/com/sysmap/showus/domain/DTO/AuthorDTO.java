@@ -1,4 +1,4 @@
-package com.sysmap.showus.data;
+package com.sysmap.showus.domain.DTO;
 
 import com.sysmap.showus.domain.User;
 

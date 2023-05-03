@@ -1,14 +1,13 @@
 package com.sysmap.showus.services.user;
 
-import com.sysmap.showus.data.AuthorDTO;
-import com.sysmap.showus.data.FollowersDTO;
+import com.sysmap.showus.domain.DTO.AuthorDTO;
 import com.sysmap.showus.data.IUserRepository;
 import com.sysmap.showus.domain.User;
+import com.sysmap.showus.domain.DTO.FollowersDTO;
 import com.sysmap.showus.services.exception.ObjNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

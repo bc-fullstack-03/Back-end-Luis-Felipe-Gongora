@@ -1,7 +1,7 @@
 package com.sysmap.showus.domain;
 
-import com.sysmap.showus.data.AuthorDTO;
-import com.sysmap.showus.data.CommentDTO;
+import com.sysmap.showus.domain.DTO.AuthorDTO;
+import com.sysmap.showus.domain.DTO.CommentDTO;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

@@ -1,7 +1,7 @@
 package com.sysmap.showus.api;
 
-import com.sysmap.showus.data.FollowersDTO;
-import com.sysmap.showus.data.UserDTO;
+import com.sysmap.showus.domain.DTO.FollowersDTO;
+import com.sysmap.showus.domain.DTO.UserDTO;
 import com.sysmap.showus.domain.User;
 import com.sysmap.showus.services.user.UserRequest;
 import com.sysmap.showus.services.user.UserService;
