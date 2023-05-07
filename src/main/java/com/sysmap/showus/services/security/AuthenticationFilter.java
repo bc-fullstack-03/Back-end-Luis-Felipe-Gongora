@@ -1,7 +1,7 @@
 package com.sysmap.showus.services.security;
 
 import com.sysmap.showus.services.user.IUserService;
-import com.sysmap.showus.services.utils.CustomErrors;
+import com.sysmap.showus.services.utils.validators.CustomErrors;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

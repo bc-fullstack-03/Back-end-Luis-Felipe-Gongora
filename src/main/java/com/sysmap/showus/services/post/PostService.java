@@ -2,12 +2,14 @@ package com.sysmap.showus.services.post;
 
 import com.sysmap.showus.data.IPostRepository;
 import com.sysmap.showus.domain.embedded.Author;
+import com.sysmap.showus.domain.embedded.Comment;
 import com.sysmap.showus.domain.embedded.Likes;
 import com.sysmap.showus.domain.entities.Post;
 import com.sysmap.showus.domain.entities.User;
 import com.sysmap.showus.services.fileUpload.IFileUploadService;
+import com.sysmap.showus.services.post.dto.CommentRequest;
 import com.sysmap.showus.services.post.dto.PostRequest;
-import com.sysmap.showus.services.validators.Validator;
+import com.sysmap.showus.services.utils.validators.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -131,6 +133,27 @@ public class PostService implements IPostService{
             if(post.getAuthor().getId().equals(userId)) {
                 _postRepo.delete(post);
             }
+        }
+    }
+
+    public void deletePost(String postId){
+        var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Post post = getPost(postId);
+        if(user.getId().equals(post.getAuthor().getId())){
+            _postRepo.delete(post);
+        }else{
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You don't have authorization to delete this post");
+        }
+    }
+
+    public Post newComment(String postId, CommentRequest comment){
+        var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Post post = getPost(postId);
+        if(Validator.isValidComment(comment.getComment())) {
+            post.getComments().add(new Comment(comment.getComment(), new Author(user)));
+            return _postRepo.save(post);
+        }else{
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Make sure the comment have at least 3 letters!");
         }
     }
 }

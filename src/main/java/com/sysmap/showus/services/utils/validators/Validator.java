@@ -1,4 +1,4 @@
-package com.sysmap.showus.services.validators;
+package com.sysmap.showus.services.utils.validators;
 
 import java.util.regex.Pattern;
 
@@ -23,5 +23,8 @@ public class Validator{
     }
     public static boolean isValidTitleDescription(String title, String description) {
         return title != null && title.trim().length() >= 3 && description != null && description.trim().length() >= 3;
+    }
+    public static boolean isValidComment(String comment) {
+        return comment != null && comment.trim().length() >= 3;
     }
 }

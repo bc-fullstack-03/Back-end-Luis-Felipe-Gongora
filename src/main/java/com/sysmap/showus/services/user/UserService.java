@@ -8,7 +8,7 @@ import com.sysmap.showus.services.post.IPostService;
 import com.sysmap.showus.services.user.dto.FollowersResponse;
 import com.sysmap.showus.services.user.dto.UserRequest;
 import com.sysmap.showus.services.user.dto.UserResponse;
-import com.sysmap.showus.services.validators.Validator;
+import com.sysmap.showus.services.utils.validators.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;

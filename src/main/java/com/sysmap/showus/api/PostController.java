@@ -2,6 +2,7 @@ package com.sysmap.showus.api;
 
 import com.sysmap.showus.domain.entities.Post;
 import com.sysmap.showus.services.post.IPostService;
+import com.sysmap.showus.services.post.dto.CommentRequest;
 import com.sysmap.showus.services.post.dto.PostRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -53,9 +54,22 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(_postService.unlikePost(postId));
     }
 
+    @PostMapping("comment")
+    @Operation(summary = "New comment")
+    public ResponseEntity<Post> newComment(String postId, @RequestBody CommentRequest comment){
+        return ResponseEntity.status(HttpStatus.OK).body(_postService.newComment(postId, comment));
+    }
+
     @GetMapping
-    @Operation(summary = "Get all Posts")
+    @Operation(summary = "Get all posts")
     public List<Post> findAllPosts(){
         return _postService.findAllPosts();
+    }
+
+    @DeleteMapping
+    @Operation(summary = "Delete a post")
+    public ResponseEntity<Void> deletePost(String postId){
+        _postService.deletePost(postId);
+        return ResponseEntity.noContent().build();
     }
 }
