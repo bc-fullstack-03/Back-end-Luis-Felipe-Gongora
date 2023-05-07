@@ -9,6 +9,7 @@ import com.sysmap.showus.domain.entities.User;
 import com.sysmap.showus.services.fileUpload.IFileUploadService;
 import com.sysmap.showus.services.post.dto.CommentRequest;
 import com.sysmap.showus.services.post.dto.PostRequest;
+import com.sysmap.showus.services.user.IUserService;
 import com.sysmap.showus.services.utils.validators.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,7 +57,7 @@ public class PostService implements IPostService{
                 }
             }
         }else{
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You don't have authorization to edit this post");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have authorization to edit this post");
         }
     }
     public List<Post> findAllPosts(){
@@ -77,6 +78,10 @@ public class PostService implements IPostService{
         }
     }
 
+    public List<Post> findAllByUserId(String userId){
+        return _postRepo.findAllByAuthorId(UUID.fromString(userId));
+    }
+
     public Post updatePost(String postId, PostRequest request){
         var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         Post post = getPost(postId);
@@ -89,7 +94,7 @@ public class PostService implements IPostService{
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Make sure the title and the description have at least 3 letters!");
             }
         }else{
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You don't have authorization to edit this post");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have authorization to edit this post");
         }
     }
 
@@ -108,26 +113,34 @@ public class PostService implements IPostService{
     public Post unlikePost(String postId){
         var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         Post post = getPost(postId);
-        if(post != null) {
-            List<Likes> likes = post.getLikes();
-            if (!likes.removeIf(userLike -> userLike.getId().equals(user.getId()))) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User is already unliked!");
-            }
-            post.setLikes(likes);
-            post.setLikesCount(post.getLikes().size());
-            return _postRepo.save(post);
-        }else{
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
+        List<Likes> likes = post.getLikes();
+        if (!likes.removeIf(userLike -> userLike.getId().equals(user.getId()))) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User is already unliked!");
         }
+        post.setLikes(likes);
+        post.setLikesCount(post.getLikes().size());
+        return _postRepo.save(post);
     }
 
     public void deleteAllUserPostsAndLikes(UUID userId){
         List<Post> allPosts = findAllPosts();
         for(Post post : allPosts) {
             List<Likes> likes = post.getLikes();
+            List<Comment> comments = post.getComments();
+
+            for(Comment comment : comments) {
+                List<Likes> commentLikes = comment.getLikes();
+                commentLikes.removeIf(like -> like.getId().equals(userId));
+                comment.setLikes(commentLikes);
+                comment.setLikesCount(commentLikes.size());
+            }
+
             likes.removeIf(like -> like.getId().equals(userId));
+            comments.removeIf(c -> c.getAuthor().getId().equals(userId));
+
             post.setLikes(likes);
             post.setLikesCount(post.getLikes().size());
+            post.setComments(comments);
             _postRepo.save(post);
 
             if(post.getAuthor().getId().equals(userId)) {
@@ -142,7 +155,7 @@ public class PostService implements IPostService{
         if(user.getId().equals(post.getAuthor().getId())){
             _postRepo.delete(post);
         }else{
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You don't have authorization to delete this post");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have authorization to delete this post");
         }
     }
 
@@ -155,5 +168,69 @@ public class PostService implements IPostService{
         }else{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Make sure the comment have at least 3 letters!");
         }
+    }
+
+    public Post updateComment(String postId, String commentId, CommentRequest updateC){
+        var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Post post = getPost(postId);
+        try {
+            Comment comment = post.getComments().stream().filter(c -> c.getId().equals(UUID.fromString(commentId))).findFirst().get();
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found");
+        }
+        Comment comment = post.getComments().stream().filter(c -> c.getId().equals(UUID.fromString(commentId))).findFirst().get();
+        if (!user.getId().equals(comment.getAuthor().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized to delete this comment");
+        }
+        if(!Validator.isValidComment(updateC.getComment())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Make sure the comment have at least 3 letters!");
+        }
+        comment.setComment(updateC.getComment());
+        return _postRepo.save(post);
+    }
+
+    public Post deleteComment(String postId, String commentId){
+        var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Post post = getPost(postId);
+        Comment comment = post.getComments().stream().filter(c -> c.getId().equals(UUID.fromString(commentId)))
+                .findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
+
+        if (!user.getId().equals(post.getAuthor().getId()) && !user.getId().equals(comment.getAuthor().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not authorized to delete this comment");
+        }
+
+        post.getComments().remove(comment);
+        post.setComments(post.getComments());
+
+        return _postRepo.save(post);
+    }
+
+    public void likeComment(String postId, String commentId){
+        var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Post post = getPost(postId);
+        Comment comment = post.getComments().stream().filter(c -> c.getId().equals(UUID.fromString(commentId)))
+                .findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
+        if (!comment.getLikes().stream().anyMatch(userLike -> userLike.getId().equals(user.getId()))){
+            comment.getLikes().add(new Likes(user));
+            comment.setLikesCount(comment.getLikes().size());
+
+            _postRepo.save(post);
+        }else{
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User is already liked!");
+        }
+    }
+
+    public void unlikeComment(String postId, String commentId){
+        var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Post post = getPost(postId);
+        Comment comment = post.getComments().stream().filter(c -> c.getId().equals(UUID.fromString(commentId)))
+                .findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
+        List<Likes> likes = comment.getLikes();
+        if (!likes.removeIf(userLike -> userLike.getId().equals(user.getId()))) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User is already unliked!");
+        }
+        comment.setLikes(likes);
+        comment.setLikesCount(comment.getLikes().size());
+        _postRepo.save(post);
     }
 }

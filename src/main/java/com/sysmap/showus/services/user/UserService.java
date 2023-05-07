@@ -99,13 +99,18 @@ public class UserService implements IUserService {
 
     public void uploadPhotoProfile(MultipartFile photo){
         var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        try {
-            var fileName = user.getId() + "." + photo.getOriginalFilename().substring(photo.getOriginalFilename().lastIndexOf(".") + 1);
-            user.setPhotoUri(_fileUploadService.upload(photo, fileName));
-        }catch (Exception e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        if (!photo.isEmpty()) {
+            try {
+                var fileName = user.getId() + "." + photo.getOriginalFilename().substring(photo.getOriginalFilename().lastIndexOf(".") + 1);
+                user.setPhotoUri(_fileUploadService.upload(photo, fileName));
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            }
+            _userRepo.save(user);
+        }else{
+            user.setPhotoUri("");
+            _userRepo.save(user);
         }
-        _userRepo.save(user);
     }
 
     public User updateUser(UserRequest request) {
@@ -137,11 +142,9 @@ public class UserService implements IUserService {
         var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         User follower = getUserById(getUserByEmail(followerEmail).getId());
         if(!user.getId().equals(follower.getId())){
-            if (user.getFollowers().getFollowingList().size() != 0) {
-                if (user.getFollowers().getFollowingList().stream().anyMatch(f -> f.getId().equals(user.getId()))) {
+                if (user.getFollowers().getFollowingList().stream().anyMatch(f -> f.getId().equals(follower.getId()))) {
                     throw new ResponseStatusException(HttpStatus.CONFLICT, "You are already following this user!");
                 }
-            }
             Author followUser = new Author(follower);
             user.getFollowers().getFollowingList().add(followUser);
             user.getFollowers().setFollowingCount(user.getFollowers().getFollowingList().size());

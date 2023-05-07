@@ -12,7 +12,7 @@ public class Comment {
     private String comment;
     private Date date;
     private Author author;
-    private List<Likes> like;
+    private List<Likes> likes =new ArrayList<>();
     private Integer likesCount;
     private UUID id;
 
@@ -24,6 +24,5 @@ public class Comment {
         this.date = new Date(System.currentTimeMillis());
         this.author = author;
         this.likesCount = 0;
-        this.like = new ArrayList<>();
     }
 }

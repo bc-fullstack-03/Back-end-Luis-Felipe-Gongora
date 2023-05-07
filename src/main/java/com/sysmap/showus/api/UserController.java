@@ -6,6 +6,9 @@ import com.sysmap.showus.services.user.dto.FollowersResponse;
 import com.sysmap.showus.services.user.dto.UserRequest;
 import com.sysmap.showus.services.user.dto.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,13 +30,14 @@ public class UserController {
     @Autowired
     private IJwtService _jwtService;
     @GetMapping()
-    @Operation(summary = "Get a User")
-    public ResponseEntity<UserResponse> getUserByEmail(String email){
+    @Operation(summary = "Get a User", security = @SecurityRequirement(name = "token"))
+    @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
+    public ResponseEntity<UserResponse> getUserByEmail(String email, @RequestHeader("RequestedBy") String userId){
         return ResponseEntity.ok().body(_userService.getUserByEmail(email));
     }
 
     @GetMapping("/follow")
-    @Operation(summary = "Get a list of users to follow")
+    @Operation(summary = "Get a list of users to follow", security = @SecurityRequirement(name = "token"))
     public ResponseEntity<List<FollowersResponse>> getUsersToFollow(){
         return ResponseEntity.ok().body(_userService.getUsersToFollow());
     }
@@ -46,7 +50,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/photo/upload", name = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Upload photo user profile")
+    @Operation(summary = "Upload photo user profile", security = @SecurityRequirement(name = "token"))
     public ResponseEntity<Void> uploadPhotoProfile(@RequestParam("photo") MultipartFile photo){
         try {
             _userService.uploadPhotoProfile(photo);
@@ -57,26 +61,26 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    @Operation(summary = "Add follower")
+    @Operation(summary = "Add follower", security = @SecurityRequirement(name = "token"))
     public ResponseEntity<UserResponse> addFollower(String email){
         return ResponseEntity.ok().body(_userService.addFollower(email));
     }
 
     @DeleteMapping("/delete")
-    @Operation(summary = "Delete a user")
+    @Operation(summary = "Delete a user", security = @SecurityRequirement(name = "token"))
     public ResponseEntity<Void> deleteById(){
         _userService.deleteUser();
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/follower/unfollow")
-    @Operation(summary = "Unfollow a follower")
+    @Operation(summary = "Unfollow a follower", security = @SecurityRequirement(name = "token"))
     public ResponseEntity<UserResponse> unfollow(String email){
         return ResponseEntity.ok().body(_userService.unfollow(email));
     }
 
     @PutMapping("/update")
-    @Operation(summary = "Update user")
+    @Operation(summary = "Update user", security = @SecurityRequirement(name = "token"))
     public ResponseEntity<UserResponse> updateUser(@RequestBody UserRequest request) {
         var user = new UserResponse(_userService.getUserById(_userService.updateUser(request).getId()));
         return ResponseEntity.ok().body(user);

@@ -10,6 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface IPostRepository extends MongoRepository<Post, UUID> {
-    List<Post> findByAuthorId(UUID userId);
-    List<Post> findAllByAuthorId(UUID authorId);
+    List<Post> findAllByAuthorId(UUID userId);
 }
