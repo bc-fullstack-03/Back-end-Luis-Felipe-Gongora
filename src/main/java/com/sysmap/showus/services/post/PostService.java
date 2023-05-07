@@ -1,62 +1,136 @@
 package com.sysmap.showus.services.post;
 
-import com.sysmap.showus.domain.DTO.AuthorDTO;
 import com.sysmap.showus.data.IPostRepository;
-import com.sysmap.showus.domain.Post;
-import com.sysmap.showus.services.exception.ObjNotFoundException;
-import com.sysmap.showus.services.user.UserService;
+import com.sysmap.showus.domain.embedded.Author;
+import com.sysmap.showus.domain.embedded.Likes;
+import com.sysmap.showus.domain.entities.Post;
+import com.sysmap.showus.domain.entities.User;
+import com.sysmap.showus.services.fileUpload.IFileUploadService;
+import com.sysmap.showus.services.post.dto.PostRequest;
+import com.sysmap.showus.services.validators.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class PostService implements IPostService {
-
+public class PostService implements IPostService{
     @Autowired
-    private IPostRepository repo;
-
+    private IPostRepository _postRepo;
     @Autowired
-    private UserService userService;
+    IFileUploadService _fileUploadService;
 
-    public List<Post> findAll(){
-        return repo.findAll();
-    }
-
-    public Post findById(UUID postId){
-        Optional<Post> post = repo.findById(postId);
-        return post.orElseThrow(() -> new ObjNotFoundException("Post not found"));
-    }
-
-    public List<Post> findByAuthorId(UUID userId){
-        return repo.findByAuthorId(userId);
-    }
-
-    public void delete(UUID userId, UUID postId){
-        var post = findById(postId);
-        if(post.getAuthor().getId().equals(userId)) {
-            repo.deleteById(postId);
+    public Post createPost(PostRequest request) {
+        var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        if(Validator.isValidTitleDescription(request.getTitle(), request.getDescription())) {
+            Post post = new Post(request.getTitle(), request.getDescription(), new Author(user));
+            return _postRepo.save(post);
         }else{
-           throw  new ObjNotFoundException("You don't have authorization");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Make sure the title and the description have at least 3 letters!");
         }
     }
 
-    public Post createPost(PostRequest request, UUID userId) {
-        var author = userService.findById(userId);
-        var post = new Post(request.getTitle(), request.getBody(), new AuthorDTO(author));
-        return repo.save(post);
+    public void uploadPhotoPost(MultipartFile photo, String postId){
+        var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Post post = getPost(postId);
+        if(post.getAuthor().getId().equals(user.getId())) {
+            if (post != null) {
+                if (!photo.isEmpty()) {
+                    try {
+                        var fileName = post.getId() + "." + photo.getOriginalFilename().substring(photo.getOriginalFilename().lastIndexOf(".") + 1);
+                        post.setPhotoUri(_fileUploadService.upload(photo, fileName));
+                    } catch (Exception e) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+                    }
+                    _postRepo.save(post);
+                } else {
+                    post.setPhotoUri("");
+                    _postRepo.save(post);
+                }
+            }
+        }else{
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You don't have authorization to edit this post");
+        }
+    }
+    public List<Post> findAllPosts(){
+        return _postRepo.findAll();
     }
 
-    public Post updatePost(UUID userId, UUID postId, PostRequest request) {
-        var post = findById(postId);
-        if(post.getAuthor().getId().equals(userId)) {
-            post.setTitle(request.getTitle());
-            post.setBody(request.getBody());
-            return repo.save(post);
+    public Post getPost(String postId){
+        try {
+            _postRepo.findById(UUID.fromString(postId)).get();
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
+        }
+        Post post = _postRepo.findById(UUID.fromString(postId)).get();
+        if(post != null){
+            return post;
         }else{
-           throw new ObjNotFoundException("You don't have authorization");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found!");
+        }
+    }
+
+    public Post updatePost(String postId, PostRequest request){
+        var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Post post = getPost(postId);
+        if(post.getAuthor().getId().equals(user.getId())){
+            if(Validator.isValidTitleDescription(request.getTitle(), request.getDescription())) {
+                post.setTitle(request.getTitle());
+                post.setDescription(request.getDescription());
+                return _postRepo.save(post);
+            }else{
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Make sure the title and the description have at least 3 letters!");
+            }
+        }else{
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You don't have authorization to edit this post");
+        }
+    }
+
+    public Post likePost(String postId){
+        var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Post post = getPost(postId);
+        if (!post.getLikes().stream().anyMatch(userLike -> userLike.getId().equals(user.getId()))) {
+            post.getLikes().add(new Likes(user));
+            post.setLikesCount(post.getLikes().size());
+            return _postRepo.save(post);
+        } else {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User is already liked!");
+        }
+    }
+
+    public Post unlikePost(String postId){
+        var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Post post = getPost(postId);
+        if(post != null) {
+            List<Likes> likes = post.getLikes();
+            if (!likes.removeIf(userLike -> userLike.getId().equals(user.getId()))) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User is already unliked!");
+            }
+            post.setLikes(likes);
+            post.setLikesCount(post.getLikes().size());
+            return _postRepo.save(post);
+        }else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
+        }
+    }
+
+    public void deleteAllUserPostsAndLikes(UUID userId){
+        List<Post> allPosts = findAllPosts();
+        for(Post post : allPosts) {
+            List<Likes> likes = post.getLikes();
+            likes.removeIf(like -> like.getId().equals(userId));
+            post.setLikes(likes);
+            post.setLikesCount(post.getLikes().size());
+            _postRepo.save(post);
+
+            if(post.getAuthor().getId().equals(userId)) {
+                _postRepo.delete(post);
+            }
         }
     }
 }

@@ -1,84 +1,83 @@
 package com.sysmap.showus.api;
 
-import com.sysmap.showus.domain.DTO.FollowersDTO;
-import com.sysmap.showus.domain.DTO.UserDTO;
-import com.sysmap.showus.domain.User;
-import com.sysmap.showus.services.user.UserRequest;
-import com.sysmap.showus.services.user.UserService;
+import com.sysmap.showus.services.security.IJwtService;
+import com.sysmap.showus.services.user.IUserService;
+import com.sysmap.showus.services.user.dto.FollowersResponse;
+import com.sysmap.showus.services.user.dto.UserRequest;
+import com.sysmap.showus.services.user.dto.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.net.URI;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/user")
 @Tag(name = "User")
 public class UserController {
-
     @Autowired
-    private UserService service;
-
-    @GetMapping
-    @Operation(summary = "Find All users")
-    public ResponseEntity<List<UserDTO>> findAll(){
-        List<User> list = service.findAll();
-        List<UserDTO> listDTO = list.stream().map(x -> new UserDTO(x)).collect(Collectors.toList());
-        return ResponseEntity.ok().body(listDTO);
+    private IUserService _userService;
+    @Autowired
+    private IJwtService _jwtService;
+    @GetMapping()
+    @Operation(summary = "Get a User")
+    public ResponseEntity<UserResponse> getUserByEmail(String email){
+        return ResponseEntity.ok().body(_userService.getUserByEmail(email));
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Find user by id")
-    public ResponseEntity<UserDTO> findById(@PathVariable UUID id){
-        User user = service.findById(id);
-        return ResponseEntity.ok().body(new UserDTO(user));
+    @GetMapping("/follow")
+    @Operation(summary = "Get a list of users to follow")
+    public ResponseEntity<List<FollowersResponse>> getUsersToFollow(){
+        return ResponseEntity.ok().body(_userService.getUsersToFollow());
     }
 
-    @GetMapping("/{userId}/follower")
-    @Operation(summary = "Find all followers from an user")
-    public ResponseEntity<FollowersDTO> findAllFollowersFromUser(@PathVariable UUID userId){
-        return ResponseEntity.ok().body(service.findAllFollowersFromUser(userId));
-    }
-
-    @PostMapping
+    @PostMapping("/create")
     @Operation(summary = "Create a new user")
-    public ResponseEntity<Void> createUser(@RequestBody UserRequest request){
-        User user = service.createUser(request);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
-        return ResponseEntity.created(uri).build();
+    public ResponseEntity<UUID> createUser(@RequestBody UserRequest request){
+        UUID user = _userService.createUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
-    @PostMapping("/{userId}/follower/{friendId}")
+    @PostMapping("/photo/upload")
+    @Operation(summary = "Upload photo user profile")
+    public ResponseEntity<Void> uploadPhotoProfile(@RequestParam("photo") MultipartFile photo){
+        try {
+            _userService.uploadPhotoProfile(photo);
+            return new ResponseEntity(HttpStatus.OK);
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/add")
     @Operation(summary = "Add follower")
-    public ResponseEntity<Void> addFriend(@PathVariable UUID userId, @PathVariable UUID friendId){
-        service.addFollower(userId, friendId);
+    public ResponseEntity<UserResponse> addFollower(String email){
+        return ResponseEntity.ok().body(_userService.addFollower(email));
+    }
+
+    @DeleteMapping("/delete")
+    @Operation(summary = "Delete a user")
+    public ResponseEntity<Void> deleteById(){
+        _userService.deleteUser();
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Delete user by id")
-    public ResponseEntity<Void> deleteById(@PathVariable UUID id){
-        service.delete(id);
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/follower/unfollow")
+    @Operation(summary = "Unfollow a follower")
+    public ResponseEntity<UserResponse> unfollow(String email){
+        return ResponseEntity.ok().body(_userService.unfollow(email));
     }
 
-    @DeleteMapping("/{userId}/follower/{friendId}")
-    @Operation(summary = "Delete a follower")
-    public ResponseEntity<Void> removeFriend(@PathVariable UUID userId, @PathVariable UUID friendId){
-        service.removeFollower(userId, friendId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping("/{id}")
-    @Operation(summary = "Update user by id")
-    public ResponseEntity<Void> updateUser(@RequestBody UserRequest request, @PathVariable UUID id) {
-        User user = service.updateUser(id, request);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/update")
+    @Operation(summary = "Update user")
+    public ResponseEntity<UserResponse> updateUser(@RequestBody UserRequest request) {
+        var user = new UserResponse(_userService.getUserById(_userService.updateUser(request).getId()));
+        return ResponseEntity.ok().body(user);
     }
 }
