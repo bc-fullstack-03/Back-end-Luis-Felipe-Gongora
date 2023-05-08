@@ -1,4 +1,4 @@
-package com.sysmap.showus.services.awsService;
+package com.sysmap.showus.services.fileUpload.awsService;
 
 import org.springframework.web.multipart.MultipartFile;
 

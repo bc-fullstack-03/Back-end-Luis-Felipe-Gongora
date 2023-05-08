@@ -1,6 +1,6 @@
 package com.sysmap.showus.services.fileUpload;
 
-import com.sysmap.showus.services.awsService.IAwsService;
+import com.sysmap.showus.services.fileUpload.awsService.IAwsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

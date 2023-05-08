@@ -1,4 +1,4 @@
-package com.sysmap.showus.services.security;
+package com.sysmap.showus.services.authentication.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

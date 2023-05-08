@@ -1,6 +1,6 @@
 package com.sysmap.showus.api;
 
-import com.sysmap.showus.services.security.IJwtService;
+import com.sysmap.showus.services.authentication.security.IJwtService;
 import com.sysmap.showus.services.user.IUserService;
 import com.sysmap.showus.services.user.dto.FollowersResponse;
 import com.sysmap.showus.services.user.dto.UserRequest;

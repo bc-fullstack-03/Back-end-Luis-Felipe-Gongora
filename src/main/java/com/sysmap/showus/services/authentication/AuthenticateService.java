@@ -2,7 +2,7 @@ package com.sysmap.showus.services.authentication;
 
 import com.sysmap.showus.services.authentication.dto.AuthenticateRequest;
 import com.sysmap.showus.services.authentication.dto.AuthenticateResponse;
-import com.sysmap.showus.services.security.IJwtService;
+import com.sysmap.showus.services.authentication.security.IJwtService;
 import com.sysmap.showus.services.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

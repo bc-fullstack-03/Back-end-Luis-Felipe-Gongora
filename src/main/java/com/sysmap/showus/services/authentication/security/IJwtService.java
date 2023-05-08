@@ -1,4 +1,4 @@
-package com.sysmap.showus.services.security;
+package com.sysmap.showus.services.authentication.security;
 
 import java.security.Key;
 import java.util.UUID;

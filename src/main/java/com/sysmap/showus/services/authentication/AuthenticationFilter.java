@@ -1,5 +1,6 @@
-package com.sysmap.showus.services.security;
+package com.sysmap.showus.services.authentication;
 
+import com.sysmap.showus.services.authentication.security.IJwtService;
 import com.sysmap.showus.services.user.IUserService;
 import com.sysmap.showus.services.utils.validators.CustomErrors;
 import jakarta.servlet.FilterChain;
