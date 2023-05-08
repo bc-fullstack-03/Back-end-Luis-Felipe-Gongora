@@ -205,7 +205,7 @@ public class PostService implements IPostService{
         return _postRepo.save(post);
     }
 
-    public void likeComment(String postId, String commentId){
+    public Post likeComment(String postId, String commentId){
         var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         Post post = getPost(postId);
         Comment comment = post.getComments().stream().filter(c -> c.getId().equals(UUID.fromString(commentId)))
@@ -214,13 +214,13 @@ public class PostService implements IPostService{
             comment.getLikes().add(new Likes(user));
             comment.setLikesCount(comment.getLikes().size());
 
-            _postRepo.save(post);
+            return _postRepo.save(post);
         }else{
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User is already liked!");
         }
     }
 
-    public void unlikeComment(String postId, String commentId){
+    public Post unlikeComment(String postId, String commentId){
         var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         Post post = getPost(postId);
         Comment comment = post.getComments().stream().filter(c -> c.getId().equals(UUID.fromString(commentId)))
@@ -231,6 +231,6 @@ public class PostService implements IPostService{
         }
         comment.setLikes(likes);
         comment.setLikesCount(comment.getLikes().size());
-        _postRepo.save(post);
+        return _postRepo.save(post);
     }
 }

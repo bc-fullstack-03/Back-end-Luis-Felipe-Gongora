@@ -108,16 +108,14 @@ public class PostController {
     @PostMapping("/comment/like")
     @Operation(summary = "Like a Comment", security = @SecurityRequirement(name = "token"))
     @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
-    public ResponseEntity<Void> likeComment(String postId, String commentId, @RequestHeader("RequestedBy") String CurrentUserId){
-        _postService.likeComment(postId, commentId);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Post> likeComment(String postId, String commentId, @RequestHeader("RequestedBy") String CurrentUserId){
+        return ResponseEntity.ok().body(_postService.likeComment(postId, commentId));
     }
 
     @PostMapping("/comment/unlike")
     @Operation(summary = "Unlike a comment", security = @SecurityRequirement(name = "token"))
     @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
-    public ResponseEntity<Void> UnlikeComment(String postId, String commentId, @RequestHeader("RequestedBy") String CurrentUserId){
-        _postService.unlikeComment(postId, commentId);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Post> UnlikeComment(String postId, String commentId, @RequestHeader("RequestedBy") String CurrentUserId){
+        return ResponseEntity.ok().body(_postService.unlikeComment(postId, commentId));
     }
 }

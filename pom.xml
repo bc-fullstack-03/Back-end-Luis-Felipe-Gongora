@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.showus</groupId>
 	<artifactId>show-us</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>show-us</name>
 	<description>Social media with spring boot by Luis Felipe Gongora Garcia</description>
 	<properties>

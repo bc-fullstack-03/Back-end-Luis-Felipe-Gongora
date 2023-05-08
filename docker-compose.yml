@@ -1,5 +1,11 @@
 version: '3'
 services:
+  mongodb:
+    image: mongo:latest
+    container_name: "mongodb"
+    ports:
+      - "27070:27017"
+
   localstack:
     image: localstack/localstack
     container_name: localstack_demo
@@ -14,3 +20,10 @@ services:
     volumes:
       - ./tmp/localstack:/tmp/localstack
       - /var/run/docker.sock:/var/run/docker.sock
+
+  show-us:
+    image: lfelipeggarcia/show-us:latest
+    build: .
+    container_name: show-us
+    ports:
+      - "8082:8082"
