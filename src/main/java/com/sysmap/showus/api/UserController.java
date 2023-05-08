@@ -32,13 +32,14 @@ public class UserController {
     @GetMapping()
     @Operation(summary = "Get a User", security = @SecurityRequirement(name = "token"))
     @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
-    public ResponseEntity<UserResponse> getUserByEmail(String email, @RequestHeader("RequestedBy") String userId){
+    public ResponseEntity<UserResponse> getUserByEmail(String email, @RequestHeader("RequestedBy") String CurrentUserId){
         return ResponseEntity.ok().body(_userService.getUserByEmail(email));
     }
 
     @GetMapping("/follow")
     @Operation(summary = "Get a list of users to follow", security = @SecurityRequirement(name = "token"))
-    public ResponseEntity<List<FollowersResponse>> getUsersToFollow(){
+    @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
+    public ResponseEntity<List<FollowersResponse>> getUsersToFollow(@RequestHeader("RequestedBy") String CurrentUserId){
         return ResponseEntity.ok().body(_userService.getUsersToFollow());
     }
 
@@ -51,7 +52,8 @@ public class UserController {
 
     @PostMapping(value = "/photo/upload", name = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Upload photo user profile", security = @SecurityRequirement(name = "token"))
-    public ResponseEntity<Void> uploadPhotoProfile(@RequestParam("photo") MultipartFile photo){
+    @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
+    public ResponseEntity<Void> uploadPhotoProfile(@RequestParam("photo") MultipartFile photo, @RequestHeader("RequestedBy") String CurrentUserId){
         try {
             _userService.uploadPhotoProfile(photo);
             return new ResponseEntity(HttpStatus.OK);
@@ -62,26 +64,30 @@ public class UserController {
 
     @PostMapping("/add")
     @Operation(summary = "Add follower", security = @SecurityRequirement(name = "token"))
-    public ResponseEntity<UserResponse> addFollower(String email){
+    @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
+    public ResponseEntity<UserResponse> addFollower(String email, @RequestHeader("RequestedBy") String CurrentUserId){
         return ResponseEntity.ok().body(_userService.addFollower(email));
     }
 
     @DeleteMapping("/delete")
     @Operation(summary = "Delete a user", security = @SecurityRequirement(name = "token"))
-    public ResponseEntity<Void> deleteById(){
+    @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
+    public ResponseEntity<Void> deleteById(@RequestHeader("RequestedBy") String CurrentUserId){
         _userService.deleteUser();
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/follower/unfollow")
     @Operation(summary = "Unfollow a follower", security = @SecurityRequirement(name = "token"))
-    public ResponseEntity<UserResponse> unfollow(String email){
+    @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
+    public ResponseEntity<UserResponse> unfollow(String email, @RequestHeader("RequestedBy") String CurrentUserId){
         return ResponseEntity.ok().body(_userService.unfollow(email));
     }
 
     @PutMapping("/update")
     @Operation(summary = "Update user", security = @SecurityRequirement(name = "token"))
-    public ResponseEntity<UserResponse> updateUser(@RequestBody UserRequest request) {
+    @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
+    public ResponseEntity<UserResponse> updateUser(@RequestBody UserRequest request, @RequestHeader("RequestedBy") String CurrentUserId) {
         var user = new UserResponse(_userService.getUserById(_userService.updateUser(request).getId()));
         return ResponseEntity.ok().body(user);
     }
