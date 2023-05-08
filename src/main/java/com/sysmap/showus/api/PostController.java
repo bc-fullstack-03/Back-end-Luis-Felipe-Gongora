@@ -76,7 +76,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(_postService.newComment(postId, comment));
     }
 
-    @PostMapping("/comment/update")
+    @PutMapping("/comment/update")
     @Operation(summary = "Update a comment", security = @SecurityRequirement(name = "token"))
     @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
     public ResponseEntity<Post> updateComment(String postId, String commentId, @RequestBody CommentRequest updateC, @RequestHeader("RequestedBy") String CurrentUserId){
