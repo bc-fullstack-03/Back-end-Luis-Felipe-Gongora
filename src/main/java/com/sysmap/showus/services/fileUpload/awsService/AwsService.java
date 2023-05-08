@@ -24,7 +24,7 @@ public class AwsService implements IAwsService {
         try {
             var fileConverted = convertMultiPartToFile(multipartFile);
             amazonS3.putObject(new PutObjectRequest("demo-bucket", fileName, fileConverted).withCannedAcl(CannedAccessControlList.PublicRead));
-            fileUri = "http://s3.localstack.localstack.cloud:4566"+"/"+"demo-bucket"+"/"+fileName;
+            fileUri = "http://s3.localhost.localstack.cloud:4566" + "/" + "demo-bucket" + "/" + fileName;
             fileConverted.delete();
         }catch (Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
