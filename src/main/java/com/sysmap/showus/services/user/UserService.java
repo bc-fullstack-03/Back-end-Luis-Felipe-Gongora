@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -186,5 +187,18 @@ public class UserService implements IUserService {
         return usersListToFollow.stream()
                 .map(u -> new FollowersResponse(u))
                 .collect(Collectors.toList());
+    }
+
+    public List<UUID> getAllFollowedId(){
+        var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        if(user.getFollowers().getFollowingList().size() == 0) {
+            List<UUID> followerId = new ArrayList<>(List.of(user.getId()));
+            return followerId;
+        }
+            var followerId = user.getFollowers().getFollowingList().stream()
+                    .map(f -> f.getId())
+                    .collect(Collectors.toList());
+            followerId.add(user.getId());
+            return followerId;
     }
 }

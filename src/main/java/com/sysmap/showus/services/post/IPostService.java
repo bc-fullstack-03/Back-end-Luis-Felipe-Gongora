@@ -24,4 +24,5 @@ public interface IPostService {
     Post unlikeComment(String postId, String commentId);
     Post updateComment(String postId, String commentId, CommentRequest updateC);
     List<Post> findAllByUserId(String email);
+    List<Post> getAllPostsByFollowed(List<UUID> followersId);
 }

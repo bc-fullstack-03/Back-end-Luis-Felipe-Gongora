@@ -4,6 +4,7 @@ import com.sysmap.showus.domain.entities.Post;
 import com.sysmap.showus.services.post.IPostService;
 import com.sysmap.showus.services.post.dto.CommentRequest;
 import com.sysmap.showus.services.post.dto.PostRequest;
+import com.sysmap.showus.services.user.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,8 +26,11 @@ public class PostController {
     @Autowired
     IPostService _postService;
 
+    @Autowired
+    IUserService _userService;
+
     @PostMapping("/create")
-    @Operation(summary = "Create a new post from a user", security = @SecurityRequirement(name = "token"))
+    @Operation(summary = "Create a new post from user", security = @SecurityRequirement(name = "token"))
     @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
     public ResponseEntity<Post> createPost(@RequestBody PostRequest request, @RequestHeader("RequestedBy") String CurrentUserId){
         var post = _postService.createPost(request);
@@ -117,5 +121,12 @@ public class PostController {
     @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
     public ResponseEntity<Post> UnlikeComment(String postId, String commentId, @RequestHeader("RequestedBy") String CurrentUserId){
         return ResponseEntity.ok().body(_postService.unlikeComment(postId, commentId));
+    }
+
+    @GetMapping("/following")
+    @Operation(summary = "Get all posts from following List", security = @SecurityRequirement(name = "token"))
+    @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
+    public ResponseEntity<List<Post>> findAllPostsByFollowed(@RequestHeader("RequestedBy") String CurrentUserId){
+        return ResponseEntity.ok().body(_postService.getAllPostsByFollowed(_userService.getAllFollowedId()));
     }
 }

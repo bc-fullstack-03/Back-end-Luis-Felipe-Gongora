@@ -9,7 +9,6 @@ import com.sysmap.showus.domain.entities.User;
 import com.sysmap.showus.services.fileUpload.IFileUploadService;
 import com.sysmap.showus.services.post.dto.CommentRequest;
 import com.sysmap.showus.services.post.dto.PostRequest;
-import com.sysmap.showus.services.user.IUserService;
 import com.sysmap.showus.services.utils.validators.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -64,6 +63,10 @@ public class PostService implements IPostService{
         return _postRepo.findAll();
     }
 
+    public List<Post> getAllPostsByFollowed(List<UUID> followersId){
+        return _postRepo.findAllByAuthorIdIn(followersId);
+    }
+
     public Post getPost(String postId){
         try {
             _postRepo.findById(UUID.fromString(postId)).get();
@@ -79,7 +82,11 @@ public class PostService implements IPostService{
     }
 
     public List<Post> findAllByUserId(String userId){
-        return _postRepo.findAllByAuthorId(UUID.fromString(userId));
+        try {
+            return _postRepo.findAllByAuthorId(UUID.fromString(userId));
+        }catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
     }
 
     public Post updatePost(String postId, PostRequest request){

@@ -19,4 +19,5 @@ public interface IUserService {
     UserResponse addFollower(String followerEmail);
     UserResponse unfollow(String followerEmail);
     List<FollowersResponse> getUsersToFollow();
+    List<UUID> getAllFollowedId();
 }
