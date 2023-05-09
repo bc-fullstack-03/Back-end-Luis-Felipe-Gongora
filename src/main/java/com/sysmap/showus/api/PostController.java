@@ -66,11 +66,12 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(_postService.likePost(postId));
     }
 
-    @PostMapping("/unlike")
+    @DeleteMapping("/unlike")
     @Operation(summary = "Unlike a post", security = @SecurityRequirement(name = "token"))
     @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
-    public ResponseEntity<Post> UnlikePost(String postId, @RequestHeader("RequestedBy") String CurrentUserId){
-        return ResponseEntity.status(HttpStatus.OK).body(_postService.unlikePost(postId));
+    public ResponseEntity<Void> UnlikePost(String postId, @RequestHeader("RequestedBy") String CurrentUserId){
+        _postService.unlikePost(postId);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/comment")
@@ -116,11 +117,12 @@ public class PostController {
         return ResponseEntity.ok().body(_postService.likeComment(postId, commentId));
     }
 
-    @PostMapping("/comment/unlike")
+    @DeleteMapping("/comment/unlike")
     @Operation(summary = "Unlike a comment", security = @SecurityRequirement(name = "token"))
     @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
-    public ResponseEntity<Post> UnlikeComment(String postId, String commentId, @RequestHeader("RequestedBy") String CurrentUserId){
-        return ResponseEntity.ok().body(_postService.unlikeComment(postId, commentId));
+    public ResponseEntity<Void> UnlikeComment(String postId, String commentId, @RequestHeader("RequestedBy") String CurrentUserId){
+        _postService.unlikeComment(postId, commentId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/following")

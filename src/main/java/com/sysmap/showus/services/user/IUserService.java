@@ -17,7 +17,7 @@ public interface IUserService {
     void uploadPhotoProfile(MultipartFile photo);
     User updateUser(UserRequest request);
     UserResponse addFollower(String followerEmail);
-    UserResponse unfollow(String followerEmail);
+    void unfollow(String followerEmail);
     List<FollowersResponse> getUsersToFollow();
     List<UUID> getAllFollowedId();
 }

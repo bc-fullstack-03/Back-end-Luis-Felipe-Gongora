@@ -162,7 +162,7 @@ public class UserService implements IUserService {
         }
     }
 
-    public UserResponse unfollow(String followerEmail) {
+    public void unfollow(String followerEmail) {
         var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         User follower = getUserById(getUserByEmail(followerEmail).getId());
         if (user.getFollowers().getFollowingList().removeIf(f -> f.getId().equals(follower.getId())) && follower.getFollowers().getFollowersList().removeIf(f -> f.getId().equals(user.getId()))){
@@ -170,7 +170,6 @@ public class UserService implements IUserService {
             follower.getFollowers().setFollowersCount(follower.getFollowers().getFollowersList().size());
             _userRepo.save(user);
             _userRepo.save(follower);
-            return new UserResponse(user);
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Follower not found!");
     }

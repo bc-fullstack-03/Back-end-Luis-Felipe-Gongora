@@ -15,13 +15,13 @@ public interface IPostService {
     Post getPost(String postId);
     Post updatePost(String postId, PostRequest request);
     Post likePost(String postId);
-    Post unlikePost(String postId);
+    void unlikePost(String postId);
     void deleteAllUserPostsAndLikes(UUID userId);
     void deletePost(String postId);
     Post newComment(String postId, CommentRequest comment);
     Post deleteComment(String postId, String commentId);
     Post likeComment(String postId, String commentId);
-    Post unlikeComment(String postId, String commentId);
+    void unlikeComment(String postId, String commentId);
     Post updateComment(String postId, String commentId, CommentRequest updateC);
     List<Post> findAllByUserId(String email);
     List<Post> getAllPostsByFollowed(List<UUID> followersId);

@@ -117,7 +117,7 @@ public class PostService implements IPostService{
         }
     }
 
-    public Post unlikePost(String postId){
+    public void unlikePost(String postId){
         var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         Post post = getPost(postId);
         List<Likes> likes = post.getLikes();
@@ -126,7 +126,7 @@ public class PostService implements IPostService{
         }
         post.setLikes(likes);
         post.setLikesCount(post.getLikes().size());
-        return _postRepo.save(post);
+        _postRepo.save(post);
     }
 
     public void deleteAllUserPostsAndLikes(UUID userId){
@@ -227,7 +227,7 @@ public class PostService implements IPostService{
         }
     }
 
-    public Post unlikeComment(String postId, String commentId){
+    public void unlikeComment(String postId, String commentId){
         var user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         Post post = getPost(postId);
         Comment comment = post.getComments().stream().filter(c -> c.getId().equals(UUID.fromString(commentId)))
@@ -238,6 +238,6 @@ public class PostService implements IPostService{
         }
         comment.setLikes(likes);
         comment.setLikesCount(comment.getLikes().size());
-        return _postRepo.save(post);
+        _postRepo.save(post);
     }
 }

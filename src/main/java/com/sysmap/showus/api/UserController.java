@@ -80,8 +80,9 @@ public class UserController {
     @DeleteMapping("/follower/unfollow")
     @Operation(summary = "Unfollow a follower", security = @SecurityRequirement(name = "token"))
     @Parameter(name = "RequestedBy", description = "User Id Authorization", required = true, schema = @Schema(type = "string"))
-    public ResponseEntity<UserResponse> unfollow(String email, @RequestHeader("RequestedBy") String CurrentUserId){
-        return ResponseEntity.ok().body(_userService.unfollow(email));
+    public ResponseEntity<Void> unfollow(String email, @RequestHeader("RequestedBy") String CurrentUserId){
+        _userService.unfollow(email);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/update")
