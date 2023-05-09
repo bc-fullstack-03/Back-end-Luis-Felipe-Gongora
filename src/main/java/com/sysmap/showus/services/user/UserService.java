@@ -170,8 +170,9 @@ public class UserService implements IUserService {
             follower.getFollowers().setFollowersCount(follower.getFollowers().getFollowersList().size());
             _userRepo.save(user);
             _userRepo.save(follower);
+        }else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Follower not found!");
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Follower not found!");
     }
 
     public List<FollowersResponse> getUsersToFollow() {
